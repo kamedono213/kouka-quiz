@@ -1,0 +1,30 @@
+{
+  "name": "効果・現象クイズ",
+  "short_name": "効果クイズ",
+  "description": "〇〇効果・〇〇現象・〇〇のパラドックスなどの名前を当てる4択クイズ",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f1e8",
+  "theme_color": "#26306b",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
