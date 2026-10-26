@@ -69,9 +69,12 @@
   css.textContent = '.rbw,.rb{margin:0!important;border:0!important;background:none!important;min-width:0!important;font:inherit!important;color:inherit!important;letter-spacing:inherit!important;text-indent:0!important}'
     + '.rbw{display:inline!important;padding:0!important}'
     + '.rb{display:inline-block!important;position:relative!important;padding:0!important}'
-    + 'html.furi .rb{padding-top:.62em!important}'
-    + 'html.furi .rb::before{content:attr(data-rt);position:absolute;top:0;left:50%;transform:translateX(-50%);font-size:.5em;font-weight:700;line-height:1.1;white-space:nowrap;letter-spacing:0;pointer-events:none}'
-    + '.furi-toggle{justify-self:start;align-self:center;width:auto;flex:none;border:1.5px solid rgba(127,127,127,.4);background:transparent;color:inherit;border-radius:999px;padding:4px 12px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}'
+    // ふりがなありの時は行の高さを広げ、読みは行間(漢字の上のすき間)に置く。行ごとに高さがばらつかない
+    + 'html.furi body{line-height:2.2}'
+    + 'html.furi .rb{line-height:max(2.2em, 1em + 17px)!important}'
+    + 'html.furi .rb::before{content:attr(data-rt);position:absolute;bottom:calc(50% + 1.02em);left:50%;transform:translateX(-50%);font-size:max(.5em,7.5px);font-weight:700;line-height:1.1;white-space:nowrap;letter-spacing:0;pointer-events:none}'
+    + '.furi-tools{display:inline-flex;flex-wrap:wrap;gap:6px;justify-self:start;align-self:center;width:auto;flex:none;line-height:1.4}'
+    + '.furi-toggle{width:auto;flex:none;line-height:1.4;border:1.5px solid rgba(127,127,127,.4);background:transparent;color:inherit;border-radius:999px;padding:4px 12px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}'
     + '.furi-toggle[aria-pressed="true"]{border-color:currentColor}';
   document.head.appendChild(css);
   const apply = () => document.documentElement.classList.toggle('furi', on);
@@ -109,6 +112,12 @@
     const w = document.createElement('span'); w.className = 'rbw'; w.appendChild(frag);
     node.replaceWith(w);
   }
+  // 切りかえボタンを入れる箱(効果音ボタンもここに入る)
+  function tools(slot) {
+    let box = slot.querySelector(':scope > .furi-tools');
+    if (!box) { box = document.createElement('span'); box.className = 'furi-tools'; box.setAttribute('data-nofuri', ''); slot.appendChild(box); }
+    return box;
+  }
   function toggleHtml() { return `<button type="button" class="furi-toggle" data-furi-toggle aria-pressed="${on}">ふりがな ${on ? 'あり' : 'なし'}</button>`; }
   function scan(root) {
     if (root.nodeType === 3) { if (ok(root.parentNode)) wrapText(root); return; }
@@ -116,8 +125,9 @@
     const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), list = [];
     let n; while ((n = w.nextNode())) if (ok(n.parentNode)) list.push(n);
     list.forEach(wrapText);
-    root.querySelectorAll && root.querySelectorAll('[data-furi-slot]').forEach(s => { if (!s.querySelector('[data-furi-toggle]')) s.insertAdjacentHTML('beforeend', toggleHtml()); });
-    if (root.hasAttribute && root.hasAttribute('data-furi-slot') && !root.querySelector('[data-furi-toggle]')) root.insertAdjacentHTML('beforeend', toggleHtml());
+    const slots = root.querySelectorAll ? [...root.querySelectorAll('[data-furi-slot]')] : [];
+    if (root.hasAttribute && root.hasAttribute('data-furi-slot')) slots.push(root);
+    slots.forEach(s => { if (!s.querySelector('[data-furi-toggle]')) tools(s).insertAdjacentHTML('afterbegin', toggleHtml()); });
   }
   new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) scan(n); })
     .observe(document.documentElement, { childList: true, subtree: true });
@@ -127,6 +137,7 @@
     apply();
     document.querySelectorAll('[data-furi-toggle]').forEach(x => { x.setAttribute('aria-pressed', on); x.textContent = 'ふりがな ' + (on ? 'あり' : 'なし'); });
   });
+  window.furiTools = tools;
   if (document.body) scan(document.body);
 })();
 

@@ -30,6 +30,7 @@ body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--b
 button { font: inherit; color: inherit; cursor: pointer; }
 #app { max-width: 680px; margin: 0 auto; padding: 18px 16px 48px; }
 .top { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.top[data-furi-slot] { flex-wrap: wrap; } .top[data-furi-slot] > button { white-space: nowrap; } .top[data-furi-slot] > .furi-tools { flex-basis: 100%; }
 .top h1 { margin: 0; font-family: var(--display); font-size: 30px; font-weight: 800; color: var(--navy); line-height: 1.2; }
 .top h2 { margin: 0; font-family: var(--display); font-size: 20px; font-weight: 800; flex: 1; min-width: 0; }
 .grow { flex: 1; }
